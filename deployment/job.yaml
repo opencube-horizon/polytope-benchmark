@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "%NAME%"
+spec:
+  template:
+    spec:
+      containers:
+      - name: benchmark
+        image: "%IMAGE%"
+        resources:
+          requests:
+            memory: "%MEMORY%"
+      restartPolicy: Never
+      imagePullSecrets:
+        - name: "%SECRET%"
+  ttlSecondsAfterFinished: 0
+  backoffLimit: 1

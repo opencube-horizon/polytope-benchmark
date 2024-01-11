@@ -11,8 +11,8 @@ RUN curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmo
     && apt update \
     && apt install -y conda
 
-RUN git clone https://github.com/ecmwf/eccodes.git \
-    && git clone https://github.com/ecmwf/ecbuild.git \
+RUN git clone --depth 1 --branch 2.33.0 https://github.com/ecmwf/eccodes.git \
+    && git clone --depth 1 --branch 3.8.2 https://github.com/ecmwf/ecbuild.git \
     && export PATH=$PWD/ecbuild/bin:$PATH \
     && mkdir build \
     && cd build \
@@ -54,8 +54,9 @@ RUN pip3 install --upgrade pip \
     h5netcdf==1.1.0 \
     h5py==3.8.0
 
-RUN git clone https://github.com/ecmwf/polytope.git \
+RUN git clone --single-branch --branch develop https://github.com/ecmwf/polytope.git\
     && cd polytope \
+    && git checkout d21c190 \
     && pip3 install -e .
 
 WORKDIR /home

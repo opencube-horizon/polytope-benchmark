@@ -3,7 +3,7 @@ set -e
 
 OUTPUT_DIR=bench_run
 NAME=polytope
-IMAGE=ghcr.io/opencube-horizon/polytope-benchmark:v1
+IMAGE=ghcr.io/opencube-horizon/polytope-benchmark@sha256:427ed6505eb1844129fcdbd5ddcb36886b79c5c56ef739cc8c2cf94b208c9dc6
 SECRET=github
 MEMORY="20G"
 
@@ -19,5 +19,5 @@ sed -i -e "s#%IMAGE%#$IMAGE#g" job.yaml
 sed -i -e "s/%SECRET%/$SECRET/g" job.yaml
 sed -i -e "s/%MEMORY%/$MEMORY/g" job.yaml
 kubectl create -f job.yaml
-kubectl wait --for=condition=ready pod --selector=job-name=$NAME
+kubectl wait --for=condition=ready pod --selector=job-name=$NAME --timeout=600s
 kubectl logs --follow --timestamps "job/$NAME" > $RUN_DIR/results.txt

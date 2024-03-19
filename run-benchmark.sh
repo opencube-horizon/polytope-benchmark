@@ -3,7 +3,7 @@ set -e
 
 OUTPUT_DIR=bench_run
 NAME=polytope
-IMAGE=ghcr.io/opencube-horizon/polytope-benchmark@sha256:427ed6505eb1844129fcdbd5ddcb36886b79c5c56ef739cc8c2cf94b208c9dc6
+IMAGE=ghcr.io/opencube-horizon/polytope-benchmark@sha256:3fe20ca20bc8b583e2ccb0af847677197a2c399c05e3f7752a7a6bd9cc73976e
 SECRET=github
 MEMORY="20G"
 

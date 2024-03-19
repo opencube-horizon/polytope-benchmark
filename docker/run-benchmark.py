@@ -8,49 +8,10 @@ from polytope.engine.hullslicer import HullSlicer
 from polytope.polytope import Polytope, Request
 from polytope.shapes import ConvexPolytope, Select, Span
 import xarray as xr
-import os 
-import requests
-
-class HTTPError(Exception):
-    def __init__(self, status_code, message):
-        self.status_code = status_code
-        self.message = message
-        super().__init__(f"HTTPError {status_code}: {message}")
-
-
-def download_test_data(nexus_url, filename):
-    local_directory = "./tests/data"
-
-    if not os.path.exists(local_directory):
-        os.makedirs(local_directory)
-
-    # Construct the full path for the local file
-    local_file_path = os.path.join(local_directory, filename)
-
-    if not os.path.exists(local_file_path):
-        session = requests.Session()
-        response = session.get(nexus_url)
-        if response.status_code != 200:
-            raise HTTPError(response.status_code, "Failed to download data.")
-        # Save the downloaded data to the local file
-        with open(local_file_path, "wb") as f:
-            f.write(response.content)
-
-
-nexus_url = "https://get.ecmwf.int/test-data/polytope/test-data/output8.grib"
-download_test_data(nexus_url, "output8.grib")
-nexus_url = "https://get.ecmwf.int/test-data/polytope/test-data/vertical_profile_era5_grid.grib"
-download_test_data(nexus_url, "vertical_profile_era5_grid.grib")
-nexus_url = "https://get.ecmwf.int/test-data/polytope/test-data/timeseries_era5.grib"
-download_test_data(nexus_url, "timeseries_era5.grib")
-nexus_url = "https://get.ecmwf.int/test-data/polytope/test-data/World_Countries__Generalized_.shp"
-download_test_data(nexus_url, "World_Countries__Generalized_.shp")
-nexus_url = "https://get.ecmwf.int/test-data/polytope/test-data/World_Countries__Generalized_.shx"
-download_test_data(nexus_url, "World_Countries__Generalized_.shx")
 
 # Pieces of countries
 
-array = xr.open_dataset("./tests/data/output8.grib", engine="cfgrib")
+array = xr.open_dataset("./test_data/output8.grib", engine="cfgrib")
 array = array.t2m
 axis_options = {
             "longitude": {"cyclic": [0, 360.0]},
@@ -61,7 +22,7 @@ xarraydatacube = XArrayDatacube(array)
 slicer = HullSlicer()
 API = Polytope(datacube=array, engine=slicer, axis_options=axis_options)
 
-shapefile = gpd.read_file("./tests/data/World_Countries__Generalized_.shp")
+shapefile = gpd.read_file("./test_data/World_Countries__Generalized_.shp")
 
 request_objects = []
 countries = []
@@ -117,7 +78,7 @@ print(num_points)
 
 # Vertical profiles
 
-array = xr.open_dataset("./tests/data/vertical_profile_era5_grid.grib", engine="cfgrib").t
+array = xr.open_dataset("./test_data/vertical_profile_era5_grid.grib", engine="cfgrib").t
 axis_options = {
             "longitude": {"cyclic": [0, 360.0]},
             "latitude": {"reverse": {True}},
@@ -160,7 +121,7 @@ print(num_points)
 
 # Timeseries
 
-array = xr.open_dataset("./tests/data/timeseries_era5.grib", engine="cfgrib").t
+array = xr.open_dataset("./test_data/timeseries_era5.grib", engine="cfgrib").t
 axis_options = {
             "longitude": {"cyclic": [0, 360.0]},
             "latitude": {"reverse": {True}},

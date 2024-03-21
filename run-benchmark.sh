@@ -18,6 +18,10 @@ sed -i -e "s/%NAME%/$NAME/g" job.yaml
 sed -i -e "s#%IMAGE%#$IMAGE#g" job.yaml
 sed -i -e "s/%SECRET%/$SECRET/g" job.yaml
 sed -i -e "s/%MEMORY%/$MEMORY/g" job.yaml
-kubectl create -f job.yaml
-kubectl wait --for=condition=ready pod --selector=job-name=$NAME --timeout=600s
-kubectl logs --follow --timestamps "job/$NAME" > $RUN_DIR/results.txt
+
+arch=$(uname -i)
+if [ "$arch" = "x86_64" ]; then k3s=k3sx64; elif [ "$arch" = "aarch64" ]; then k3s=k3sarm64; else echo "Unsupported arch $arch" && [ 1 = 0 ]; fi
+
+$k3s kubectl create -f job.yaml
+$k3s kubectl wait --for=condition=ready pod --selector=job-name=$NAME --timeout=600s
+$k3s kubectl logs --follow --timestamps "job/$NAME" > $RUN_DIR/results.txt

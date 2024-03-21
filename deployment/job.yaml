@@ -11,6 +11,11 @@ spec:
         resources:
           requests:
             memory: "%MEMORY%"
+        env:
+        - name: LD_LIBRARY_PATH
+          value: /root/miniforge3/lib
+        - name: PROJ_LIB
+          value: /root/miniforge3/share/proj
       restartPolicy: Never
       imagePullSecrets:
         - name: "%SECRET%"

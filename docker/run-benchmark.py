@@ -112,7 +112,7 @@ def vertical_benchmark(source: str):
         "class": "er",
         "stream": "oper",
         "expver": "0001",
-        "date": "19900801",
+        "date": "19900731",
         "time": "00",
         "levtype": "ml",
         "levelist": list(range(1, 32)),
@@ -145,11 +145,11 @@ def vertical_benchmark(source: str):
                 request = Request(
                     Select("number", [0]),
                     Select("step", ["00:00:00"]),
-                    Select("time", ["1990-08-01"]),
+                    Select("time", ["1990-07-31"]),
                     Select("latitude", [lat]),
                     Select("longitude", [lon]),
                     Span("hybrid", 1, 31),
-                    Select("valid_time", ["1990-08-01"]),
+                    Select("valid_time", ["1990-07-31"]),
                 )
 
                 # Extract the values of the long and lat from the tree
@@ -224,19 +224,19 @@ def main(args):
     parser.add_argument(
         "--polygon-source",
         type=str,
-        default="file:test_data/output8.grib",
+        default="file:test_data/polygon.grib",
         help="source of the data for polygon benchmark",
     )
     parser.add_argument(
         "--vertical-source",
         type=str,
-        default="file:test_data/vertical_profile_era5_grid.grib",
+        default="file:test_data/vertical.grib",
         help="source of the data for vertical profile benchmark",
     )
     parser.add_argument(
         "--timeseries-source",
         type=str,
-        default="file:test_data/timeseries_era5.grib",
+        default="file:test_data/timeseries.grib",
         help="source of the data for timeseries benchmark",
     )
 

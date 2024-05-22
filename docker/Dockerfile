@@ -14,51 +14,34 @@ RUN if [ "${TARGETARCH}" = "amd64" ]; then version="x86_64"; elif [ "${TARGETARC
 	&& conda -V \
 	&& conda deactivate 
 
+RUN mkdir -p -m 0600 /root/.ssh \
+    && ssh-keyscan git.ecmwf.int >> /root/.ssh/known_hosts \
+    && ssh-keyscan github.com >> /root/.ssh/known_hosts \
+    && cat /root/.ssh/known_hosts
 
-RUN git clone --depth 1 --branch 2.33.0 https://github.com/ecmwf/eccodes.git \
-    && git clone --depth 1 --branch 3.8.2 https://github.com/ecmwf/ecbuild.git \
-    && export PATH=$PWD/ecbuild/bin:$PATH \
-    && mkdir build \
-    && cd build \
-    && cmake  ../eccodes -DCMAKE_INSTALL_PREFIX=/eccodes_installation -DENABLE_AEC=OFF \
-    && make \
-    && make install \ 
-    && cd .. 
+# Install bundle 
+WORKDIR /home
+RUN --mount=type=ssh git clone ssh://git@git.ecmwf.int/~mawj/polytope-bundle.git -v --branch main --single-branch --depth 1 
+RUN --mount=type=ssh cd /home/polytope-bundle \
+    && ./polytope-bundle create \
+    && ./polytope-bundle build \
+    && build/install.sh --fast \
+    && cd ..
+
+ENV LD_LIBRARY_PATH=/home/polytope-bundle/install/lib:$LD_LIBRARY_PATH
 
 RUN source /root/miniforge3/bin/activate \
     && conda install -y gdal 
 
+COPY requirements.txt /home/requirements.txt
 RUN export GDAL_CONFIG=/root/miniforge3/bin/gdal-config \
     && python3 -m pip install pip --upgrade --break-system-packages \    
-    && python3 -m pip install --break-system-packages cfgrib==0.9.10.3 \
-    Shapely \
-    shp==1.0.2 \
-    Fiona==1.8.22 \
-    geopandas==0.10.2 \
-    pyshp==2.3.1 \
-    importlib-metadata==4.13.0 \
-    decorator==5.1.1 \
-    pandas==1.3.5 \
-    pypi==2.1 \
-    requests==2.28.1 \
-    sortedcontainers==2.4.0 \
-    tripy==1.0.0 \
-    typing==3.7.4.3 \
-    xarray==0.20.2 \
-    pytest==7.2.0 \
-    cffi==1.15.1 \
-    eccodes==1.5.2 \
-    h5netcdf==1.1.0 \
-    h5py==3.8.0
+    && python3 -m pip install --break-system-packages -r /home/requirements.txt
 
-RUN git clone --single-branch --branch develop https://github.com/ecmwf/polytope.git\
-    && cd polytope \
-    && git checkout d21c190 \
-    && python3 -m pip install --break-system-packages -e .
-
-WORKDIR /home
 COPY run-benchmark.py /home/run-benchmark.py
-
 COPY test_data /home/test_data
+COPY templates /home/fdb/etc/fdb
+COPY run.sh /home/run.sh
+ENV FDB_HOME=/home/fdb
 
-ENTRYPOINT [ "python3" , "/home/run-benchmark.py"]
+ENTRYPOINT [ "bash", "-c", "/home/run.sh"]

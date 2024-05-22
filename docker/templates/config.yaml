@@ -1,0 +1,4 @@
+---
+type: remote
+host: %HOST%
+port: %PORT%

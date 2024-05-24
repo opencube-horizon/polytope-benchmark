@@ -14,14 +14,14 @@ import xarray as xr
 
 
 def data_from_source(source: str, request: dict):
-    source, loc = source.split(":")
-    if source == "fdb":
-        ds = from_source(source, request, stream=True, batch_size=0)
+    src = source.split(":")
+    if src[0] == "fdb":
+        ds = from_source(src[0], request, stream=True, batch_size=0)
         if len(ds) == 0:
-            raise ValueError(f"No data found in {source} for request {request}")
+            raise ValueError(f"No data found in {src[0]} for request {request}")
         return ds.to_xarray(xarray_open_dataset_kwargs={"squeeze": True})
-    if source == "file":
-        return xr.open_dataset(loc)
+    if src[0] == "file":
+        return xr.open_dataset(src[1])
 
 
 def polygon_benchmark(source: dict):

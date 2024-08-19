@@ -2,3 +2,5 @@
 type: remote
 host: %HOST%
 port: %PORT%
+engine: remote
+store: remote

@@ -6,6 +6,7 @@ NAME=polytope
 IMAGE=ghcr.io/opencube-horizon/polytope-benchmark@sha256:7b00b4b93d899adee6c7bb506f5985150e7289491c527eb3e19f81d2b8fa8785 
 SECRET=github
 MEMORY="20G"
+ARGS='["infra1", "9000", "fdb:", "fdb:", "fdb:"]'
 
 mkdir -p $OUTPUT_DIR
 LATEST_RUN_NUMBER=$(ls $OUTPUT_DIR | tail -1)
@@ -18,6 +19,7 @@ sed -i -e "s/%NAME%/$NAME/g" job.yaml
 sed -i -e "s#%IMAGE%#$IMAGE#g" job.yaml
 sed -i -e "s/%SECRET%/$SECRET/g" job.yaml
 sed -i -e "s/%MEMORY%/$MEMORY/g" job.yaml
+sed -i -e "s/%ARGS%/$ARGS/g" job.yaml
 
 arch=$(uname -i)
 if [ "$arch" = "x86_64" ]; then k3s=k3sx64; elif [ "$arch" = "aarch64" ]; then k3s=k3sarm64; else echo "Unsupported arch $arch" && [ 1 = 0 ]; fi

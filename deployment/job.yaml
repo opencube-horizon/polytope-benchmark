@@ -15,5 +15,6 @@ spec:
       restartPolicy: Never
       imagePullSecrets:
         - name: "%SECRET%"
+      hostAliases: [{"ip": "10.97.3.1", "hostnames": ["infra1", "infra1.can.pt.horizon-opencube.eu"]}]
   ttlSecondsAfterFinished: 0
   backoffLimit: 1

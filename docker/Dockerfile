@@ -2,7 +2,7 @@ FROM debian:bookworm
 ARG TARGETARCH
 
 RUN apt update \
-    && apt install -y wget gpg openssl python3 python3-pip cmake git gcc gfortran python3.11-dev python3-ecmwflibs python3-scipy python3-fiona 
+    && apt install -y wget gpg openssl python3 python3-pip cmake git gcc gfortran python3.11-dev python3-scipy python3-fiona 
 
 SHELL ["/bin/bash", "-c"]
 
@@ -23,8 +23,12 @@ RUN --mount=type=ssh cd /home/polytope-bundle \
 ENV LD_LIBRARY_PATH=/home/polytope-bundle/install/lib:$LD_LIBRARY_PATH
 
 COPY requirements.txt /home/requirements.txt
-RUN python3 -m pip install pip --upgrade --break-system-packages \    
-    && python3 -m pip install --break-system-packages -r /home/requirements.txt
+RUN apt install -y python3-venv \
+    && python3 -m venv --system-site-packages /home/env \
+    && source /home/env/bin/activate \
+    && python -m pip install pip --upgrade \    
+    && python -m pip install -r /home/requirements.txt \
+    && python -m pip list 
 
 COPY run-benchmark.py /home/run-benchmark.py
 COPY test_data /home/test_data

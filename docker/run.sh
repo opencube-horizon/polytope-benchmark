@@ -12,4 +12,5 @@ echo "ARGS:" $HOST $PORT $POLYGON_SOURCE $VERTICAL_SOURCE $TIMESERIES_SOURCE
 sed -i "s/%HOST%/$HOST/g" /home/fdb/etc/fdb/config.yaml
 sed -i "s/%PORT%/$PORT/g" /home/fdb/etc/fdb/config.yaml
 
-python3 run-benchmark.py --polygon-source $POLYGON_SOURCE --vertical-source $VERTICAL_SOURCE --timeseries-source $TIMESERIES_SOURCE
+source /home/env/bin/activate
+python run-benchmark.py --polygon-source $POLYGON_SOURCE --vertical-source $VERTICAL_SOURCE --timeseries-source $TIMESERIES_SOURCE

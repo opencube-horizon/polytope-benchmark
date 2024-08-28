@@ -16,7 +16,7 @@ import xarray as xr
 def data_from_source(source: str, request: dict):
     src = source.split(":")
     if src[0] == "fdb":
-        ds = from_source(src[0], request, stream=True, batch_size=0)
+        ds = from_source(src[0], request, stream=True, read_all=True)
         if len(ds) == 0:
             raise ValueError(f"No data found in {src[0]} for request {request}")
         return ds.to_xarray(xarray_open_dataset_kwargs={"squeeze": True})

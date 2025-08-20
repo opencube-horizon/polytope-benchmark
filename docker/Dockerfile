@@ -1,4 +1,4 @@
-FROM eccr.ecmwf.int/opencube/openfam:3.0.0
+FROM debian:bookworm
 ARG TARGETARCH
 
 RUN apt update \
@@ -13,7 +13,7 @@ RUN mkdir -p -m 0600 /root/.ssh \
 
 # Install bundle 
 WORKDIR /home
-RUN --mount=type=ssh git clone ssh://git@git.ecmwf.int/~mawj/polytope-bundle.git -v --branch opencube/fdb-fam --single-branch --depth 1 \
+RUN --mount=type=ssh git clone ssh://git@git.ecmwf.int/~mawj/polytope-bundle.git -v --branch opencube/fam-test --single-branch --depth 1 \
     && cat /home/polytope-bundle/bundle.yml 
 RUN --mount=type=ssh cd /home/polytope-bundle \
     && bash polytope-bundle create \

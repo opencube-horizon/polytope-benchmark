@@ -3,10 +3,12 @@ set -e
 
 OUTPUT_DIR=bench_run
 NAME=polytope
-IMAGE=ghcr.io/opencube-horizon/polytope-benchmark@sha256:7b00b4b93d899adee6c7bb506f5985150e7289491c527eb3e19f81d2b8fa8785 
+IMAGE=ghcr.io/opencube-horizon/polytope-benchmark@sha256:ca1729bc2e0ec5c073bb051724e789f2abaa53e6c554ba647775f39d12e191fd 
 SECRET=github
 MEMORY="20G"
-ARGS='["infra1", "9000", "fdb:", "fdb:", "fdb:"]'
+HOST=${FDB_HOST:-infra1}
+PORT=${FDB_PORT:-9000}
+ARGS="[$HOST, $PORT, 'fdb:', 'fdb:', 'fdb:']"
 
 mkdir -p $OUTPUT_DIR
 LATEST_RUN_NUMBER=$(ls $OUTPUT_DIR | tail -1)
@@ -19,11 +21,12 @@ sed -i -e "s/%NAME%/$NAME/g" job.yaml
 sed -i -e "s#%IMAGE%#$IMAGE#g" job.yaml
 sed -i -e "s/%SECRET%/$SECRET/g" job.yaml
 sed -i -e "s/%MEMORY%/$MEMORY/g" job.yaml
-sed -i -e "s/%ARGS%/$ARGS/g" job.yaml
+sed -i -e "s/%ARGS%/$ARGS/g" job.yamli
+cp job.yaml $RUN_DIR
 
-arch=$(uname -i)
-if [ "$arch" = "x86_64" ]; then k3s=k3sx64; elif [ "$arch" = "aarch64" ]; then k3s=k3sarm64; else echo "Unsupported arch $arch" && [ 1 = 0 ]; fi
+export KUBECONFIG=$(realpath /home/jwong/.kube/config)
 
-$k3s kubectl create -f job.yaml
-$k3s kubectl wait --for=condition=ready pod --selector=job-name=$NAME --timeout=600s
-$k3s kubectl logs --follow --timestamps "job/$NAME" > $RUN_DIR/results.txt
+ARCH=$(uname -m)
+~/bin/$ARCH/kubectl create -f job.yaml
+~/bin/$ARCH/kubectl wait --for=condition=ready pod --selector=job-name=$NAME --timeout=600s
+~/bin/$ARCH/kubectl logs --follow --timestamps "job/$NAME" > $RUN_DIR/results.txt

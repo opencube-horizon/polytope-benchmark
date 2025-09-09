@@ -1,27 +1,17 @@
-FROM eccr.ecmwf.int/opencube/openfam:3.0.0
+FROM --platform=$BUILDPLATFORM eccr.ecmwf.int/opencube/fdb-fam-devos:latest as builder
+
+FROM debian:bookworm
 ARG TARGETARCH
+
+RUN rm -r /usr/local
+COPY --from=builder /usr/local /usr/local
 
 RUN apt update \
     && apt install -y wget gpg openssl python3 python3-pip cmake git gcc gfortran python3.11-dev python3-scipy python3-fiona 
 
 SHELL ["/bin/bash", "-c"]
 
-RUN mkdir -p -m 0600 /root/.ssh \
-    && ssh-keyscan git.ecmwf.int >> /root/.ssh/known_hosts \
-    && ssh-keyscan github.com >> /root/.ssh/known_hosts \
-    && cat /root/.ssh/known_hosts
-
-# Install bundle 
-WORKDIR /home
-RUN --mount=type=ssh git clone ssh://git@git.ecmwf.int/~mawj/polytope-bundle.git -v --branch opencube/fdb-fam --single-branch --depth 1 \
-    && cat /home/polytope-bundle/bundle.yml 
-RUN --mount=type=ssh cd /home/polytope-bundle \
-    && bash polytope-bundle create \
-    && bash polytope-bundle build \
-    && build/install.sh --fast \
-    && cd ..
-
-ENV LD_LIBRARY_PATH=/home/polytope-bundle/install/lib:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/usr/local/lib64:$LD_LIBRARY_PATH
 
 COPY requirements.txt /home/requirements.txt
 RUN apt install -y python3-venv \
@@ -33,8 +23,10 @@ RUN apt install -y python3-venv \
 
 COPY run-benchmark.py /home/run-benchmark.py
 COPY test_data /home/test_data
-COPY templates /home/fdb/etc/fdb
+COPY templates/remote-config.yaml /home/fdb/remote/etc/fdb/config.yaml
+COPY templates/local-config.yaml /home/fdb/local/etc/fdb/config.yaml
+COPY templates/schema /home/fdb/local/etc/fdb/schema
+RUN sed -i "s;%SCHEMA%;/home/fdb/local/etc/fdb/schema;g" /home/fdb/local/etc/fdb/config.yaml
 COPY run.sh /home/run.sh
-ENV FDB_HOME=/home/fdb
 
 ENTRYPOINT [ "bash", "run.sh"]

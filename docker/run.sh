@@ -3,14 +3,14 @@
 FDB_TYPE=${1}
 
 # Set up FDB config
-if [ $FDB_TYPE -eq "remote" ]; then 
+if [ "$FDB_TYPE" = "remote" ]; then 
     export FDB_HOME=/home/fdb/remote
     HOST=${2}
     PORT=${3}
     echo "ARGS:" $FDB_TYPE $HOST $PORT
     sed -i "s/%HOST%/$HOST/g" ${FDB_HOME}/etc/fdb/config.yaml
     sed -i "s/%PORT%/$PORT/g" ${FDB_HOME}/etc/fdb/config.yaml
-elif [ $FDB_TYPE -eq "local" ]; then 
+elif [ "$FDB_TYPE" = "local" ]; then 
     export FDB_HOME=/home/fdb/local
     INDEX=${2}
     FAM_URI=${3}

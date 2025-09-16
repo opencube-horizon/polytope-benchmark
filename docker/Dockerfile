@@ -29,4 +29,4 @@ COPY templates/schema /home/fdb/local/etc/fdb/schema
 RUN sed -i "s;%SCHEMA%;/home/fdb/local/etc/fdb/schema;g" /home/fdb/local/etc/fdb/config.yaml
 COPY run.sh /home/run.sh
 
-ENTRYPOINT [ "bash", "run.sh"]
+ENTRYPOINT [ "bash", "/home/run.sh"]

@@ -23,4 +23,4 @@ else
 fi
 
 source /home/env/bin/activate
-python run-benchmark.py --polygon-source fdb: --vertical-source fdb: --timeseries-source fdb:
+python /home/run-benchmark.py --polygon-source fdb: --vertical-source fdb: --timeseries-source fdb:

@@ -27,6 +27,7 @@ COPY templates/remote-config.yaml /home/fdb/remote/etc/fdb/config.yaml
 COPY templates/local-config.yaml /home/fdb/local/etc/fdb/config.yaml
 COPY templates/schema /home/fdb/local/etc/fdb/schema
 RUN sed -i "s;%SCHEMA%;/home/fdb/local/etc/fdb/schema;g" /home/fdb/local/etc/fdb/config.yaml
+WORKDIR /home
 COPY run.sh /home/run.sh
 
 ENTRYPOINT [ "bash", "/home/run.sh"]

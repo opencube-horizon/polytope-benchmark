@@ -22,5 +22,6 @@ else
     exit 1
 fi
 
+cat ${FDB_HOME}/etc/fdb/config.yaml
 source /home/env/bin/activate
 python /home/run-benchmark.py --polygon-source fdb: --vertical-source fdb: --timeseries-source fdb:

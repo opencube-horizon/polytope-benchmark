@@ -5,3 +5,4 @@ geopandas==0.10.2
 polytope-python==1.0.3
 git+https://github.com/ecmwf/pyfdb.git@0.0.3
 earthkit-data[fdb]==0.9.0
+fiona==1.9.1

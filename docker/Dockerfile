@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM eccr.ecmwf.int/opencube/fdb-fam-devos:latest 
+FROM eccr.ecmwf.int/opencube/fdb-fam-devos:latest 
 
 WORKDIR /home
 RUN zypper update -y \

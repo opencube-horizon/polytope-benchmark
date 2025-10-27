@@ -4,14 +4,14 @@ FDB_TYPE=${1}
 
 # Set up FDB config
 if [ "$FDB_TYPE" = "remote" ]; then 
-    export FDB_HOME=/home/fdb/remote
+    export FDB_HOME=/home/benchmark/fdb/remote
     HOST=${2}
     PORT=${3}
     echo "ARGS:" $FDB_TYPE $HOST $PORT
     sed -i "s/%HOST%/$HOST/g" ${FDB_HOME}/etc/fdb/config.yaml
     sed -i "s/%PORT%/$PORT/g" ${FDB_HOME}/etc/fdb/config.yaml
 elif [ "$FDB_TYPE" = "local" ]; then 
-    export FDB_HOME=/home/fdb/local
+    export FDB_HOME=/home/benchmark/fdb/local
     INDEX=${2}
     FAM_URI=${3}
     echo "ARGS:" $FDB_TYPE $INDEX $FAM_URI
@@ -24,4 +24,4 @@ fi
 
 cat ${FDB_HOME}/etc/fdb/config.yaml
 source /home/env/bin/activate
-python /home/run-benchmark.py --polygon-source fdb: --vertical-source fdb: --timeseries-source fdb:
+python /home/benchmark/run-benchmark.py --polygon-source fdb: --vertical-source fdb: --timeseries-source fdb:

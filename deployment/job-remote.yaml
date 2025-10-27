@@ -12,6 +12,9 @@ spec:
         resources:
           requests:
             memory: "%MEMORY%"
+        env:
+        - name: FDB_DEBUG
+          value: "1"
       restartPolicy: Never
       imagePullSecrets:
         - name: "%SECRET%"

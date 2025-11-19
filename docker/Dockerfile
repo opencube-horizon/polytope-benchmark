@@ -18,7 +18,7 @@ COPY run-benchmark.py /home/benchmark/run-benchmark.py
 COPY test_data /home/benchmark/test_data
 COPY templates/remote-config.yaml /home/benchmark/fdb/remote/etc/fdb/config.yaml
 COPY templates/local-config.yaml /home/benchmark/fdb/local/etc/fdb/config.yaml
-COPY templates/schema /home/benchmark/fdb/local/etc/fdb/schema
+COPY templates/fam-schema /home/benchmark/fdb/local/etc/fdb/schema
 COPY run.sh /home/benchmark/run.sh
 RUN sed -i "s;%SCHEMA%;/home/benchmark/fdb/local/etc/fdb/schema;g" /home/benchmark/fdb/local/etc/fdb/config.yaml
 RUN chgrp --recursive ecmwf /home/benchmark && chmod --recursive g=u /home/benchmark

@@ -3,7 +3,7 @@ set -e
 
 OUTPUT_DIR=bench_run
 NAME=polytope
-IMAGE=ghcr.io/opencube-horizon/polytope-benchmark@sha256:fc07253abddcabcfc59b2a1f85ab2f82841cd12bf963626ca7ba1b8f296de2d9
+IMAGE=ghcr.io/opencube-horizon/polytope-benchmark@sha256:1028b4472749ce2e695369b0fb7a8000d30446e4c95dd072bd36b1683006facf
 SECRET=github
 MEMORY="20G"
 
@@ -38,6 +38,6 @@ mv job.yaml $RUN_DIR/job.yaml
 export KUBECONFIG=$(realpath /home/jwong/.kube/config)
 
 ARCH=$(uname -m)
-~/bin/$ARCH/kubectl create -f $RUN_DIR/job.yaml
-~/bin/$ARCH/kubectl wait --for=condition=ready pod --selector=job-name=$NAME --timeout=600s
-~/bin/$ARCH/kubectl logs --follow --timestamps "job/$NAME" > $RUN_DIR/results.txt
+~/bin/$ARCH/kubectl --kubeconfig=/shared/WP/3/OpenFam-K8s/k3s-testcluster.kubeconf create -f $RUN_DIR/job.yaml
+~/bin/$ARCH/kubectl --kubeconfig=/shared/WP/3/OpenFam-K8s/k3s-testcluster.kubeconf wait --for=condition=ready pod --selector=job-name=$NAME --timeout=600s
+~/bin/$ARCH/kubectl --kubeconfig=/shared/WP/3/OpenFam-K8s/k3s-testcluster.kubeconf logs --follow --timestamps "job/$NAME" > $RUN_DIR/results.txt

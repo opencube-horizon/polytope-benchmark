@@ -1,12 +1,19 @@
-FROM harbor.pt.horizon-opencube.eu/ecmwf/fdb-fam:1.0.0 
+FROM harbor.pt.horizon-opencube.eu/ecmwf/fdb-fam:2.0.0 
 
 WORKDIR /home/benchmark
 RUN zypper update -y \
-    && zypper install -y python311-devel gdal gdal-devel proj
+    && zypper install -y gdal gdal-devel proj
 ENV GDAL_VERSION=3.6.2
 
+RUN curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR="/usr/bin" sh && uv --version
+ENV UV_PYTHON_INSTALL_DIR=/usr/local/share/uv/python
+ENV UV_PYTHON_BIN_DIR=/usr/local/bin
+RUN uv python install 3.11 && uv python list
 COPY requirements.txt /home/requirements.txt
-RUN python3.11 -m venv --system-site-packages /home/env \
+RUN export CC=gcc-15 \
+    && export CXX=g++-15 \
+    && export CFLAGS='-Wno-error=incompatible-pointer-types' \
+    && uv venv --python 3.11 --seed /home/env \
     && source /home/env/bin/activate \
     && python -m pip install pip --upgrade \    
     && python -m pip install -r /home/requirements.txt \

@@ -5,17 +5,47 @@ metadata:
 spec:
   template:
     spec:
+      securityContext:
+        runAsUser: 10012 
+        runAsGroup: 20013
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - cn05
+                - cn06
+                - cn07
       containers:
       - name: benchmark
         image: "%IMAGE%"
         args: %ARGS%
+        env:
+        - name: FI_PROVIDER
+          value: cxi
+        - name: CXIP_SKIP_AMA_CHECK
+          value: "true"
+        - name: FI_CXI_LLRING_MODE
+          value: never
         resources:
           requests:
             memory: "%MEMORY%"
-        env:
-        - name: FDB_DEBUG
-          value: "1"
+            smarter-devices/cxi0: "1"
+          limits:
+            smarter-devices/cxi0: "1"
+        volumeMounts: 
+        - name: libcxi
+          readOnly: true
+          mountPath: /usr/lib64/libcxi.so.1
       restartPolicy: Never
+      volumes:
+      - name: libcxi
+        hostPath:
+          path: /usr/lib64/libcxi.so.1.5.0
+          type: File
       imagePullSecrets:
         - name: "%SECRET%"
       hostAliases: [{"ip": "10.97.3.1", "hostnames": ["infra1", "infra1.can.pt.horizon-opencube.eu"]}]

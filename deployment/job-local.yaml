@@ -2,12 +2,10 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: "%NAME%"
+  namespace: openfam
 spec:
   template:
     spec:
-      securityContext:
-        runAsUser: 10012 
-        runAsGroup: 20013
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -15,10 +13,7 @@ spec:
             - matchExpressions:
               - key: kubernetes.io/hostname
                 operator: In
-                values:
-                - cn05
-                - cn06
-                - cn07
+                values: %NODE_LIST%
       containers:
       - name: benchmark
         image: "%IMAGE%"
@@ -30,6 +25,10 @@ spec:
           value: "true"
         - name: FI_CXI_LLRING_MODE
           value: never
+        - name: OPENFAM_INSTALL_DIR
+          value: '/usr/local/'
+        - name: OPENFAM_ROOT
+          value: '/usr/local/'
         resources:
           requests:
             memory: "%MEMORY%"
@@ -37,22 +36,39 @@ spec:
           limits:
             smarter-devices/cxi0: "1"
         volumeMounts: 
-        - mountPath: "%INDEX%"
-          name: "fdb-index"
-          mountPropagation: None
         - name: libcxi
           readOnly: true
           mountPath: /usr/lib64/libcxi.so.1
+        - name: cis
+          mountPath: '/usr/local/config/fam_client_interface_config.yaml'
+          subPath: 'fam_client_interface_config.yaml'
+        - name: meta
+          mountPath: '/usr/local/config/fam_metadata_config.yaml'
+          subPath: 'fam_metadata_config.yaml'
+        - name: mem
+          mountPath: '/usr/local/config/fam_memoryserver_config.yaml'
+          subPath: 'fam_memoryserver_config.yaml'
+        - name: pe
+          mountPath: '/usr/local/config/fam_pe_config.yaml'
+          subPath: 'fam_pe_config.yaml'
       restartPolicy: Never
       volumes:
-      - name: "fdb-index"
-        hostPath:
-          path: "%HOST_INDEX%"
-          type: Directory
       - name: libcxi
         hostPath:
-          path: /usr/lib64/libcxi.so.1.5.0
+          path: /usr/lib64/libcxi.so.1
           type: File
+      - name: cis
+        configMap:
+          name: openfam-cis
+      - name: meta
+        configMap:
+          name: openfam-meta
+      - name: mem
+        configMap:
+          name: openfam-mem
+      - name: pe
+        configMap:
+          name: openfam-pe
       imagePullSecrets:
         - name: "%SECRET%"
       hostAliases: [{"ip": "10.97.3.1", "hostnames": ["infra1", "infra1.can.pt.horizon-opencube.eu"]}]

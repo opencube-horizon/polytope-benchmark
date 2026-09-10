@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export ECCODES_PYTHON_USE_FINDLIB=1
+export FINDLIBS_DISABLE_PACKAGE=yes
+
 FDB_TYPE=${1}
 
 # Set up FDB config
@@ -12,10 +15,8 @@ if [ "$FDB_TYPE" = "remote" ]; then
     sed -i "s/%PORT%/$PORT/g" ${FDB_HOME}/etc/fdb/config.yaml
 elif [ "$FDB_TYPE" = "local" ]; then 
     export FDB_HOME=/home/benchmark/fdb/local
-    INDEX=${2}
-    FAM_URI=${3}
-    echo "ARGS:" $FDB_TYPE $INDEX $FAM_URI
-    sed -i "s;%INDEX%;$INDEX;g" ${FDB_HOME}/etc/fdb/config.yaml
+    FAM_URI=${2}
+    echo "ARGS:" $FDB_TYPE $FAM_URI
     sed -i "s;%FAM_URI%;${FAM_URI};g" ${FDB_HOME}/etc/fdb/config.yaml
 else
     echo "Unknown FDB type $FDB_TYPE"

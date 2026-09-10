@@ -1,25 +1,25 @@
-FROM harbor.pt.horizon-opencube.eu/ecmwf/fdb-fam:2.0.0 
+FROM harbor.pt.horizon-opencube.eu/ecmwf/fdb-fam:3.0.0 
 
 WORKDIR /home/benchmark
 RUN zypper update -y \
-    && zypper install -y gdal gdal-devel proj
+    && zypper install -y gdal gdal-devel proj libffi-devel
 ENV GDAL_VERSION=3.6.2
 
 RUN curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR="/usr/bin" sh && uv --version
 ENV UV_PYTHON_INSTALL_DIR=/usr/local/share/uv/python
 ENV UV_PYTHON_BIN_DIR=/usr/local/bin
-RUN uv python install 3.11 && uv python list
 COPY requirements.txt /home/requirements.txt
 RUN export CC=gcc-15 \
     && export CXX=g++-15 \
     && export CFLAGS='-Wno-error=incompatible-pointer-types' \
-    && uv venv --python 3.11 --seed /home/env \
+    && export ECCODES_PYTHON_USE_FINDLIBS=1 \
+    && export FINDLIBS_DISABLE_PACKAGE=yes \
+    && uv venv --python 3.12 --seed /home/env \
     && source /home/env/bin/activate \
     && python -m pip install pip --upgrade \    
     && python -m pip install -r /home/requirements.txt \
     && python -m pip list 
 
-RUN groupadd -g 20013 ecmwf 
  
 COPY run-benchmark.py /home/benchmark/run-benchmark.py
 COPY test_data /home/benchmark/test_data
@@ -28,11 +28,7 @@ COPY templates/local-config.yaml /home/benchmark/fdb/local/etc/fdb/config.yaml
 COPY templates/fam-schema /home/benchmark/fdb/local/etc/fdb/schema
 COPY run.sh /home/benchmark/run.sh
 RUN sed -i "s;%SCHEMA%;/home/benchmark/fdb/local/etc/fdb/schema;g" /home/benchmark/fdb/local/etc/fdb/config.yaml
-RUN chgrp --recursive ecmwf /home/benchmark && chmod --recursive g=u /home/benchmark
 
-RUN useradd -M -d /home/benchmark -u 1234 -g 20013 benchuser
-USER benchuser
-ENV USER=benchuser
 ENV HOME=/home/benchmark
 WORKDIR /home/benchmark
 

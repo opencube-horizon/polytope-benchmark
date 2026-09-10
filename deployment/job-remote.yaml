@@ -15,10 +15,7 @@ spec:
             - matchExpressions:
               - key: kubernetes.io/hostname
                 operator: In
-                values:
-                - cn05
-                - cn06
-                - cn07
+                values: %NODE_LIST%
       containers:
       - name: benchmark
         image: "%IMAGE%"

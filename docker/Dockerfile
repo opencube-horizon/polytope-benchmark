@@ -1,4 +1,4 @@
-FROM harbor.pt.horizon-opencube.eu/ecmwf/fdb-fam:3.0.0 
+FROM harbor.pt.horizon-opencube.eu/ecmwf/pproc-fdb-fam:0.0.1 
 
 WORKDIR /home/benchmark
 RUN zypper update -y \
